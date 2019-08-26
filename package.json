@@ -72,6 +72,7 @@
     "email": "dev@union.co",
     "url": "https://union.co"
   },
+  "repository": "https://github.com/unionco/cra11y",
   "build": {
     "appId": "co.union.cra11y",
     "productName": "Cra11y",
@@ -79,10 +80,15 @@
     "asar": true,
     "asarUnpack": "node_modules/puppeteer/.local-chromium/**/*",
     "mac": {
-      "category": "public.app-category.utilities"
+      "category": "public.app-category.utilities",
+      "target": [
+        {
+          "target": "dir"
+        }
+      ]
     },
     "dmg": {
-      "backgroundColor": "#262626"
+      "background": "build/background.tiff"
     },
     "files": [
       "build/**/*",
