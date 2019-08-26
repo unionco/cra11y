@@ -1,4 +1,4 @@
-# Craw11y
+# Cra11y
 
 An open source web a11y crawling tool using [Electron](https://electronjs.org), [React](https://reactjs.org), and [Axe](https://www.deque.com/axe) built by [Union](https://union.co).
 
