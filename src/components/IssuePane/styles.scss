@@ -1,0 +1,130 @@
+.issue-pane {
+    flex: 1;
+    padding: 0 16px;
+
+    ion-grid {
+        --ion-grid-padding: 0;
+    }
+
+    &-description {
+        h4,
+        p {
+            margin: 0;
+        }
+
+        h4 {
+            margin-bottom: 8px;
+        }
+    }
+
+    &-header {
+        align-items: flex-start;
+        padding: 16px 0;
+    }
+
+    &-heading {
+        h3 {
+            margin: 0;
+        }
+    }
+
+    &-impact {
+        ion-button {
+            --padding-bottom: 0;
+            --padding-end: 0;
+            --padding-start: 0;
+            --padding-top: 0;
+
+            font-size: 0.75em;
+            margin: 0 !important;
+        }
+
+        p {
+            font-size: 0.75em;
+            letter-spacing: 0.72px;
+            margin: 0;
+            text-transform: uppercase;
+        }
+    }
+
+    &-nodes {
+        ion-card {
+            margin: 0;
+            margin-top: 32px;
+
+            ion-card-header {
+                --background: #262626;
+
+                align-items: center;
+                display: flex;
+                justify-content: space-between;
+
+                ion-card-title {
+                    --color: var(--ion-color-light);
+                }
+            }
+
+            ion-card-content {
+                padding-top: 16px;
+
+                .node-issue-section {
+                    margin-bottom: 32px;
+
+                    p {
+                        margin-top: 16px;
+                    }
+                }
+
+                .tag-list {
+                    ion-chip {
+                        padding: 3px 6px;
+                        font-size: 12px;
+                    }
+                }
+            }
+        }
+    }
+
+    .paginator {
+        background: var(--ion-color-medium);
+        border-radius: 15px;
+        display: flex;
+        overflow: hidden;
+        width: 150px;
+
+        > div {
+            align-items: center;
+            display: flex;
+            color: var(--ion-color-light);
+            justify-content: center;
+            padding: 8px;
+            user-select: none;
+
+            &:hover {
+                background: var(--ion-color-medium-shade);
+            }
+        }
+
+        &-current {
+            flex: 1;
+        }
+
+        &-prev,
+        &-next {
+            cursor: pointer;
+            width: 30px;
+        }
+
+        &-prev {
+            border-right: 1px solid var(--ion-color-medium-shade);
+        }
+
+        &-next {
+            border-left: 1px solid var(--ion-color-medium-shade);
+        }
+    }
+
+    .tag-list {
+        margin-top: 16px;
+    }
+}

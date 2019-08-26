@@ -1,0 +1,33 @@
+.project-popover {
+
+    ion-list {
+        ion-list-header {
+            margin-bottom: 8px;
+            min-height: unset;
+            position: relative;
+
+            ion-label {
+                background: #fff;
+                color: var(--ion-color-dark-tint);
+                position: relative;
+                padding: 0 16px;
+                z-index: 1;
+                font-style: italic;
+            }
+
+            &:after {
+                content: '';
+                position: absolute;
+                top: 50%;
+                left: 0;
+                width: 100%;
+                border-top: 2px solid var(--ion-color-light-shade);
+                z-index: 0;
+            }
+        }
+
+        ion-item:hover {
+            --background: var(--ion-color-light-shade)
+        }
+    }
+}

@@ -1,0 +1,44 @@
+.ProjectFormPage {
+  align-items: center;
+  background: #eee;
+  display: flex;
+  flex: 1;
+  height: 100vh;
+  justify-content: center;
+  position: relative;
+
+  ion-grid {
+  --ion-grid-padding: 0;
+  }
+
+  &-close {
+    cursor: pointer;
+    font-size: 3em;
+    position: absolute;
+    top: 32px;
+    right: 32px;
+  }
+
+  &-form {
+    width: 720px;
+  }
+
+  &-group {
+    background: white;
+  }
+
+  &-submit {
+    margin-top: 32px;
+
+    ion-col {
+      text-align: center;
+    }
+  }
+
+  &-title {
+    font-size: 3.5em;
+    font-weight: 700;
+    line-height: 1;
+    margin: 0 0 16px;
+  }
+}

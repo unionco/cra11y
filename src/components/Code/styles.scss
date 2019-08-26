@@ -1,0 +1,16 @@
+.code {
+    border-radius: 10px;
+    height: 100%;
+    width: 100%;
+
+    pre {
+        white-space: pre-wrap;
+        word-wrap: break-word;
+    }
+
+    pre,
+    code {
+        border-radius: 5px;
+        height: 100%;
+    }
+}

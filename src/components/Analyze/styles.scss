@@ -1,0 +1,14 @@
+.Analyze {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 88px);
+  justify-content: center;
+  width: 100%;
+
+  h1,
+  p {
+    margin: 0;
+    margin-bottom: 16px;
+  }
+}

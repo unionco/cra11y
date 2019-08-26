@@ -1,0 +1,61 @@
+.OrganizerPanel {
+  --pane-background: #262626;
+  --header-background: #EEEEEE;
+
+  background: var(--pane-background);
+  height: 100vh;
+  padding: 0;
+
+  ion-header ion-toolbar {
+    --background: var(--header-background);
+  }
+
+  ion-content {
+    --background: var(--pane-background);
+    height: 100%;
+
+    ion-toolbar {
+      --background: var(--pane-background);
+    }
+  }
+
+  ion-list {
+    padding: 0 !important;
+
+    ion-item {
+      --background: var(--pane-background);
+
+      &.ion-focusable:hover {
+        --background: #3D3D3D;
+      }
+
+      ion-label {
+        white-space: initial !important;
+
+        h3 {
+          color: #f5f5f5;
+        }
+
+        p {
+          font-size: 12px;
+        }
+
+        .badge-list {
+          margin-top: 8px;
+
+          ion-badge {
+            + ion-badge {
+              margin-left: 8px;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  &-spacer {
+    height: 32px;
+    -webkit-user-select: none;
+    -webkit-app-region: drag;
+  }
+}

@@ -1,0 +1,36 @@
+.result-pane {
+    --pane-background: #EEEEEE;
+
+    background: var(--pane-background);
+    border-right: 1px solid #ddd;
+    height: calc(100vh - 88px);
+    overflow-y: auto;
+    width: 100%;
+}
+
+.result-pane ion-list {
+    padding: 0 !important;
+    margin-bottom: 16px;
+}
+
+.result-pane ion-list ion-item,
+.result-pane ion-list ion-list-header {
+    --background: var(--pane-background);
+}
+
+.result-pane ion-list ion-list-header {
+    box-shadow: 0 1px 5px -2px #262626;
+    letter-spacing: 1px;
+    position: sticky;
+    text-transform: uppercase;
+    top: 0;
+    z-index: 99;
+}
+
+.result-pane ion-list ion-item:hover {
+    --background: #D7D7D7;
+}
+
+.result-pane ion-list ion-item ion-label {
+    white-space: initial !important;
+}

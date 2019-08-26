@@ -1,0 +1,58 @@
+.ProjectPage {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+
+  ion-header {
+    ion-toolbar {
+      align-items: center;
+      display: flex;
+      height: calc(56px + 32px);
+
+      ion-title {
+        * {
+          margin: 0;
+        }
+
+        h2 {
+          font-size: 1em;
+        }
+
+        p {
+          font-size: 0.75em;
+        }
+      }
+    }
+  }
+
+  ion-grid {
+    --ion-grid-padding: 0;
+
+    flex: 1;
+    width: 100%;
+
+    ion-col {
+      padding: 0;
+    }
+  }
+
+  &-scores {
+    display: flex;
+    margin: 0 16px;
+  }
+
+  &-score {
+    align-items: center;
+    border-radius: 50%;
+    display: flex;
+    font-weight: bold;
+    font-size: 1.25em;
+    height: 50px;
+    justify-content: center;
+    width: 50px;
+
+    &:not(:last-child) {
+      margin-right: 8px;
+    }
+  }
+}
