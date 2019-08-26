@@ -4,13 +4,15 @@ An open source web a11y crawling tool using [Electron](https://electronjs.org), 
 
 ## Concepts
 
-Postman or Insomnia + A11y tooling. This MacOS app is using Create React App and Electron to create a seemless UI to crawl and audit accessibil
+Postman or Insomnia + A11y tooling. This MacOS app is using Create React App and Electron to create a seemless UI to crawl and audit accessibilty rules on an entire websites. It uses [Puppeteer](https://github.com/GoogleChrome/puppeteer) to be able to run javascript to get the best possible audit results.
 
 
 ### Project
 A project contains a name, home url, number of pages to initially crawl and analyze, and some axe related settings. In the future we would like to provide a way to upload a settings.json file with all axe related possible configuration. Once crawled and analyzed, projects will have an array of pages along with their results.
 
 ### Page
+A page contains the following:
+
 * Url
 * A11y
   * Tool Options
