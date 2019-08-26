@@ -82,7 +82,7 @@
       "category": "public.app-category.utilities"
     },
     "dmg": {
-      "title": "Cra11y"
+      "backgroundColor": "#262626"
     },
     "files": [
       "build/**/*",
