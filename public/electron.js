@@ -1,10 +1,14 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 const isDevMode = require('electron-is-dev');
+const { SplashScreen } = require('./splash');
 
 const path = require('path');
 
 // Place holders for our windows so they don't get garbage collected.
 let mainWindow = null;
+
+// Placeholder for SplashScreen ref
+let splashScreen = null;
 
 // Create simple menu for easy devtools access, and for demo
 // const menuTemplateDev = [
@@ -35,13 +39,13 @@ async function createWindow () {
     }
   });
 
-  mainWindow.loadURL(
-    isDevMode ? 'http://localhost:3000' : `file://${path.join(__dirname, '../build/index.html')}`
-  );
+  // mainWindow.loadURL(
+  //   isDevMode ? 'http://localhost:3000' : `file://${path.join(__dirname, '../build/index.html')}`
+  // );
 
-  mainWindow.webContents.on('dom-ready', () => {
-    mainWindow.show();
-  });
+  // mainWindow.webContents.on('dom-ready', () => {
+  //   mainWindow.show();
+  // });
 
   if (isDevMode) {
     // Set our above template to the Menu Object if we are in development mode, dont want users having the devtools.
@@ -49,6 +53,13 @@ async function createWindow () {
     // If we are developers we might as well open the devtools by default.
     mainWindow.webContents.openDevTools();
   }
+
+  splashScreen = new SplashScreen(mainWindow, {
+    imageFileName: 'logo-inner.png',
+    imageFilePath: `file://${path.join(__dirname, '../build/splash_assets/')}`,
+    loadUrl: isDevMode ? 'http://localhost:3000' : `file://${path.join(__dirname, '../build/index.html')}`
+  });
+  splashScreen.init(false);
 }
 
 // This method will be called when Electron has finished

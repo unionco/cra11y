@@ -17,4 +17,40 @@
     text-transform: uppercase;
     font-weight: bold;
   }
+
+  img {
+    max-width: 100%;
+    position: relative;
+  }
+
+  .Logo {
+    align-items: center;
+    background: #155196;
+    border-radius: 50%;
+    display: flex;
+    height: 512px;
+    justify-content: center;
+    position: relative;
+    margin-bottom: 32px;
+    width: 512px;
+    overflow: hidden;
+  }
+}
+
+@keyframes roll {
+  0% {
+    transform: translate3d(-100%, 0, 0);
+  }
+  50% {
+    transform: rotate(0deg) translate3d(0, 0, 0);
+  }
+  55% {
+    transform: rotate(-5deg) translate3d(0, 0, 0);
+  }
+  60% {
+    transform: rotate(0deg) translate3d(0, 0, 0);
+  }
+  100% {
+    transform: rotate(0deg) translate3d(100%, 0, 0);
+  }
 }
