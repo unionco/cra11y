@@ -1,5 +1,6 @@
 {
   "name": "cra11y",
+  "description": "An open source web a11y crawling tool using Electron, React and Axe.",
   "version": "0.1.0",
   "private": true,
   "homepage": "./",
@@ -87,15 +88,12 @@
         }
       ]
     },
-    "dmg": {
-      "background": "build/background.tiff"
-    },
     "files": [
       "build/**/*",
       "node_modules/**/*"
     ],
     "directories": {
-      "buildResources": "assets"
+      "buildResources": "build"
     }
   }
 }
