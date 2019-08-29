@@ -2,6 +2,17 @@
 
 An open source web a11y crawling tool using [Electron](https://electronjs.org), [React](https://reactjs.org), and [Axe](https://www.deque.com/axe) built by [Union](https://union.co).
 
+## Quick Start
+
+* `git clone https://github.com/unionco/cra11y.git`
+* `cd cra11y && yarn install`
+
+To run locally and have live reload
+* `yarn run electron-dev`
+
+To build and package mac app
+* `yarn run electron-pack`
+
 ## Concepts
 
 Postman or Insomnia + A11y tooling. This MacOS app is using Create React App and Electron to create a seemless UI to crawl and audit accessibilty rules on an entire websites. It uses [Puppeteer](https://github.com/GoogleChrome/puppeteer) to be able to run javascript to get the best possible audit results.

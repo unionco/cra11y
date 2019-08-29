@@ -96,7 +96,9 @@ class SplashScreen {
     `;
 
     this.mainWindowRef.on('closed', () => {
-      this.splashWindow.close();
+      if (this.splashWindow !== null) {
+        this.splashWindow.close();
+      }
     });
 
     this.splashWindow.loadURL(`data:text/html;charset=UTF-8,${splashHtml}`, { baseURLForDataURL: this.splashOptions.imageFilePath });
@@ -124,6 +126,11 @@ class SplashScreen {
   hide() {
     this.mainWindowRef.show();
     this.splashWindow.hide();
+  }
+
+  close() {
+    this.splashWindow.close();
+    this.splashWindow = null;
   }
 }
 
