@@ -1,8 +1,8 @@
 // import { ipcRenderer } from 'electron';
-import { Page } from '../store/models';
+import { Page, Project } from '../store/models';
 import { Dispatch } from 'react';
 
-export function crawl(url: string, useJs: boolean): Promise<any> {
+export function crawl(url: string, project: Project): Promise<any> {
   return new Promise((resolve, reject) => {
     (window as any).ipcRenderer.on('crawl-reply', (event: any, args: any) => {
       const page: Page = {
@@ -20,7 +20,9 @@ export function crawl(url: string, useJs: boolean): Promise<any> {
 
     (window as any).ipcRenderer.send('crawl-async', {
       url,
-      useJs
+      useJs: project.useJs,
+      tags: (project.tags || []).map(t => t.value),
+      resultTypes: (project.resultTypes || []).map(t => t.value)
     });
   })
 }

@@ -6,10 +6,16 @@ function getChromiumExecPath() {
   return puppeteer.executablePath().replace('app.asar', 'app.asar.unpacked');
 }
 
-const webpage = async (options) => {
-  const { url, useJs = false } = options;
+const webpage = async ({
+  url,
+  useJs = false,
+  tags = ['wcag2a', 'best-practice'],
+  resultTypes = ['violations', 'incomplete', 'inapplicable', 'passes'],
+}) => {
+  let page = null;
   let html = '';
   let results = null;
+  let runConfig = {};
 
   if (useJs) {
     // use puppeteer
@@ -18,17 +24,24 @@ const webpage = async (options) => {
     });
 
     try {
-      const page = await browser.newPage();
+      page = await browser.newPage();
 
       await page.goto(url, { waitUntil: 'networkidle2' });
 
       html = await page.evaluate(() => document.documentElement.innerHTML);
 
+      runConfig = {
+        runOnly: {
+          type: 'tag',
+          values: tags,
+        },
+        resultTypes: resultTypes
+      }
       const handle = await page.evaluateHandle(`
         // Inject axe source code
         ${axeCore.source}
         // Run axe
-        axe.run()
+        axe.run(${JSON.stringify(runConfig)})
       `);
 
       results = await handle.jsonValue();
@@ -39,6 +52,7 @@ const webpage = async (options) => {
       return error;
     }
 
+    await page.close();
     await browser.close();
 
     return {

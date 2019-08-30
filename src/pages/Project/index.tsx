@@ -8,6 +8,7 @@ import PagePane from "../../components/PagePane";
 import IssuePane from "../../components/IssuePane";
 import Analyze from "../../components/Analyze";
 import { crawl } from "../../util";
+import { ResultType } from "../../store/models/Project";
 
 interface List {
   label: string;
@@ -51,7 +52,7 @@ const ProjectPage: React.FunctionComponent<any> = ({ match: { params }, ...props
     const pageIndex = project.pages.findIndex((p: Page) => p.url === page.url);
     dispatch({ type: ActionType.CrawlPage, payload: { page: pageIndex } });
 
-    const response = await crawl(page.url, state.project.useJs);
+    const response = await crawl(page.url, state.project);
     project.pages[pageIndex] = response;
 
     dispatch({ type: ActionType.UpdateProject, payload: { project } });
@@ -63,7 +64,7 @@ const ProjectPage: React.FunctionComponent<any> = ({ match: { params }, ...props
       return (
         <>
           <IonCol size="4">
-            <PagePane page={page} />
+            <PagePane project={state.project} page={page} />
           </IonCol>
           <IonCol size="8">
             <IssuePane />
@@ -99,11 +100,11 @@ const ProjectPage: React.FunctionComponent<any> = ({ match: { params }, ...props
             <h2>{page.url}</h2>
             <p>{project.timestamp}</p>
           </IonTitle>
-          {page.ally &&
+          {state.project && page.ally &&
             <div className="ProjectPage-scores" slot="end">
-              {listMap.map((list: List, index: number) => (
-                <IonButton shape="round" key={index} color={list.color} className="ProjectPage-score" onClick={() => scrollTo(list.value)}>
-                  {page.ally[list.value].length}
+              {state.project.resultTypes.map((type: ResultType, index: number) => (
+                <IonButton shape="round" key={index} color={type.color} className="ProjectPage-score" onClick={() => scrollTo(type.value)}>
+                  {page.ally[type.value].length}
                 </IonButton>
               ))}
             </div>

@@ -99,8 +99,6 @@ ipcMain.on('async', (event, arg) => {
 });
 
 ipcMain.on('crawl-async', (event, args) => {
-  console.log('crawl-async', args);
-
   webpage(args)
     .then((response) => {
       event.reply('crawl-reply', {

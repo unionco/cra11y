@@ -2,35 +2,26 @@ import React, { useContext } from 'react';
 import { IonList, IonListHeader, IonLabel, IonItem, IonBadge } from '@ionic/react';
 import _ from 'lodash';
 import axe from 'axe-core';
-import { AppContext, Page } from '../../store';
+import { AppContext, Page, Project } from '../../store';
 import { ActionType } from '../../store/types';
 import './styles.css';
+import { ResultType } from '../../store/models/Project';
 
 interface PagePaneProps {
-  page: Page
+  page: Page,
+  project: Project
 }
 
-interface List {
-  label: string;
-  value: string;
-  color: string;
-}
-
-const PagePane: React.FunctionComponent<PagePaneProps> = ({ page }) => {
+const PagePane: React.FunctionComponent<PagePaneProps> = ({ project, page }) => {
   const { dispatch } = useContext<any>(AppContext);
 
-  const listMap: List[] = [
-    { label: 'Violations', value: 'violations', color: 'primary' },
-    { label: 'Incomplete', value: 'incomplete', color: 'secondary' },
-    { label: 'Inapplicable', value: 'inapplicable', color: 'tertiary' },
-    { label: 'Passes', value: 'passes', color: 'success' },
-  ];
+  const listMap: ResultType[] = project.resultTypes || [];
 
   const setIssue = (issue: any) => {
     dispatch({ type: ActionType.SetIssue, payload: { issue } })
   }
 
-  const generateList = (page: Page, list: List, index: number) => {
+  const generateList = (page: Page, list: ResultType, index: number) => {
     const issues: axe.Result[] = _.get(page.ally, list.value);
 
     return (
@@ -59,7 +50,7 @@ const PagePane: React.FunctionComponent<PagePaneProps> = ({ page }) => {
 
   return (
     <div className="result-pane">
-      {listMap.map((list: List, index: number) => generateList(page, list, index))}
+      {listMap.map((list: ResultType, index: number) => generateList(page, list, index))}
     </div>
   );
 };

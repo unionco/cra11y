@@ -8,15 +8,24 @@ import { useRouter } from "../../util/router";
 import { AppContext, Page } from "../../store";
 import { ActionType } from "../../store/types";
 import { crawl, pageLinks } from "../../util";
+import { ResultType, Tag } from "../../store/models/Project";
 
 const ProjectFormPage: React.FunctionComponent<any> = () => {
   /** static */
-  const tagValues = [
+  const tagValues: Tag[] = [
     { label: 'Best Practice', value: 'best-practice', checked: true },
     { label: 'WCAG A', value: 'wcag2a', checked: true },
-    { label: 'WCAG AA', value: 'wcag2aa' },
-    { label: 'Section 508', value: 'section508' },
+    { label: 'WCAG AA', value: 'wcag2aa', checked: false },
+    { label: 'Section 508', value: 'section508', checked: false },
   ];
+
+  // ['violations', 'incomplete', 'inapplicable', 'passes']
+  const resultTypes: ResultType[] = [
+    { label: 'Violations', value: 'violations', checked: true, color: 'primary' },
+    { label: 'Incomplete', value: 'incomplete', checked: true, color: 'secondary' },
+    { label: 'Inapplicable', value: 'inapplicable', checked: true, color: 'tertiary' },
+    { label: 'Passes', value: 'passes', checked: true, color: 'success' },
+  ]
 
   const project: any = {
     name: 'Boplex Audit',
@@ -33,6 +42,7 @@ const ProjectFormPage: React.FunctionComponent<any> = () => {
   const { state, dispatch } = useContext<any>(AppContext);
   const [formValue, setFormValues] = useState<any>(state.project && state.project.id ? state.project : project);
   const [tags, setTags] = useState<any>(tagValues);
+  const [types, setTypes] = useState<any>(resultTypes);
   const [valid, isValid] = useState<any>(false);
   const [showAlert, setShowAlert] = useState(false);
 
@@ -62,7 +72,13 @@ const ProjectFormPage: React.FunctionComponent<any> = () => {
   const updateTags = (tag: any, checked: boolean) => {
     const index = tags.findIndex((t: any) => t.value === tag.value);
     tags[index].checked = checked;
-    setTags(tags)
+    setTags(tags);
+  }
+
+  const updateTypes = (type: any, checked: boolean) => {
+    const index = types.findIndex((t: any) => t.value === type.value);
+    types[index].checked = checked;
+    setTypes(types);
   }
 
   const deleteProject = () => {
@@ -79,7 +95,8 @@ const ProjectFormPage: React.FunctionComponent<any> = () => {
 
     const project = {
       ...formValue,
-      tags
+      tags: tags.filter((t: Tag) => t.checked),
+      resultTypes: types.filter((t: ResultType) => t.checked),
     };
 
     if (!project.id) {
@@ -87,7 +104,7 @@ const ProjectFormPage: React.FunctionComponent<any> = () => {
     }
 
     // response from our crawl util -> electron
-    const response = await crawl(project.home, project.useJs);
+    const response = await crawl(project.home, project);
 
     // push page into pages
     const pageIndex = project.pages.findIndex((page: Page) => page.url === response.url);
@@ -206,18 +223,29 @@ const ProjectFormPage: React.FunctionComponent<any> = () => {
 
           <IonRow>
             <IonCol>
-              <h2>A11y Settings</h2>
-            </IonCol>
-          </IonRow>
-          <IonRow className="project-form-group">
-            <IonCol>
-              <IonList>
+              <h2>A11y Rules</h2>
+              <p>Limit which rules are executed, based on names or tags.</p>
+              <IonList className="project-form-group">
                 {tags.map((tag: any, i: number) => (
                   <IonItem key={i} lines="none">
                     <IonLabel>
                       {tag.label}
                     </IonLabel>
                     <IonCheckbox slot="end" value={tag.value} checked={tag.checked} color="primary" onIonChange={(e) => updateTags(tag, e.detail.checked)} />
+                  </IonItem>
+                ))}
+              </IonList>
+            </IonCol>
+            <IonCol>
+              <h2>Result Types</h2>
+              <p>Limit which result types are processed and aggregated.</p>
+              <IonList className="project-form-group">
+                {types.map((type: any, i: number) => (
+                  <IonItem key={i} lines="none">
+                    <IonLabel>
+                      {type.label}
+                    </IonLabel>
+                    <IonCheckbox slot="end" value={type.value} checked={type.checked} color={type.color} onIonChange={(e) => updateTypes(type, e.detail.checked)} />
                   </IonItem>
                 ))}
               </IonList>

@@ -8,6 +8,7 @@ import { crawl } from '../../util/crawl';
 import ProjectPopover from '../ProjectPopover';
 import PageActionPopover from '../PageActionPopover';
 import './styles.scss';
+import { ResultType } from '../../store/models/Project';
 
 const OrganizerPanel: React.FunctionComponent<any> = () => {
 
@@ -79,7 +80,7 @@ const OrganizerPanel: React.FunctionComponent<any> = () => {
     const pageIndex = project.pages.findIndex((p: Page) => p.url === page.url);
     dispatch({ type: ActionType.CrawlPage, payload: { page: pageIndex } });
 
-    const response = await crawl(page.url, state.project.useJs);
+    const response = await crawl(page.url, state.project);
     project.pages[pageIndex] = response;
 
     dispatch({ type: ActionType.UpdateProject, payload: { project } });
@@ -153,18 +154,11 @@ const OrganizerPanel: React.FunctionComponent<any> = () => {
 
                   {page.ally &&
                     <div className="badge-list">
-                      <IonBadge mode="ios" color="primary">
-                        {page.ally.violations.length}
-                      </IonBadge>
-                      <IonBadge mode="ios" color="secondary">
-                        {page.ally.incomplete.length}
-                      </IonBadge>
-                      <IonBadge mode="ios" color="tertiary">
-                        {page.ally.inapplicable.length}
-                      </IonBadge>
-                      <IonBadge mode="ios" color="success">
-                        {page.ally.passes.length}
-                      </IonBadge>
+                      {state.project.resultTypes.map((type: ResultType, index: number) => (
+                        <IonBadge mode="ios" color={type.color} key={index}>
+                          {page.ally && (page.ally as any)[type.value].length}
+                        </IonBadge>
+                      ))}
                     </div>
                   }
                 </IonLabel>
