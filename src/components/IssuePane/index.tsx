@@ -57,7 +57,7 @@ const IssuePane: React.FunctionComponent<IssuePaneProps> = (props) => {
         {node.failureSummary &&
           <div className="node-issue-section">
             <h2>Solution</h2>
-            <p dangerouslySetInnerHTML={{ __html: node.failureSummary.replace('\n', '<br/>') }} />
+            <p dangerouslySetInnerHTML={{ __html: node.failureSummary.replace(/(?:\r\n|\r|\n)/g, '<br/>') }} />
           </div>
         }
       </div>
