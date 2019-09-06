@@ -1,14 +1,8 @@
-.ProjectFormPage {
-  align-items: center;
-  background: #eee;
-  display: flex;
-  flex: 1;
-  height: 100vh;
-  justify-content: center;
-  position: relative;
+.ProjectForm {
+  --background: #eee;
 
   ion-grid {
-  --ion-grid-padding: 0;
+    --ion-grid-padding: 0;
   }
 
   &-close {
@@ -20,7 +14,7 @@
   }
 
   &-form {
-    width: 720px;
+    padding: 16px;
   }
 
   &-group {

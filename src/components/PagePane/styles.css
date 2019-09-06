@@ -30,6 +30,9 @@
 .result-pane ion-list ion-item:hover {
     --background: #D7D7D7;
 }
+.result-pane ion-list ion-item.u-active {
+    --background: #D7D7D7;
+}
 
 .result-pane ion-list ion-item ion-label {
     white-space: initial !important;

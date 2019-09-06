@@ -1,23 +1,16 @@
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import { IonGrid, IonRow, IonCol, IonIcon, IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonChip } from '@ionic/react';
 import { arrowBack, arrowForward, shareAlt } from 'ionicons/icons';
-import { AppContext } from '../../store';
 import Code from '../Code';
 import BrowserLink from '../BrowserLink';
 import './styles.scss';
 
 interface IssuePaneProps {
-  show?: boolean
+  issue: any
 }
 
-const IssuePane: React.FunctionComponent<IssuePaneProps> = (props) => {
-  const { state } = useContext<any>(AppContext);
+const IssuePane: React.FunctionComponent<IssuePaneProps> = ({ issue }) => {
   const [page, changePage] = useState(0);
-  const { issue } = state;
-
-  if (!props.show || !issue) {
-    return null;
-  }
 
   const next = () => {
     if (page < (issue.nodes.length - 1)) {
@@ -138,10 +131,6 @@ const IssuePane: React.FunctionComponent<IssuePaneProps> = (props) => {
       </IonGrid>
     </div>
   );
-};
-
-IssuePane.defaultProps = {
-  show: true
 };
 
 export default IssuePane;

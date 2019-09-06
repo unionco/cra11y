@@ -1,6 +1,5 @@
 import React from 'react';
 import { AppContextProvider } from './store';
-import { Switch, Route, Router, Redirect } from './util/router';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -24,39 +23,12 @@ import './theme/variables.scss';
 import './App.scss';
 
 /* Pages */
-import HomePage from './pages/Home';
-import ProjectPage from './pages/Project';
-import ProjectFormPage from './pages/ProjectForm';
-
-/* Components */
-import OrganizerPanel from './components/OrganizerPanel';
-import MainPanel from './components/MainPanel';
-import Window from './components/Window';
-
-
-const Redirect301: React.FC<any> = ({ location }) => {
-  return (
-    <Redirect to='/projects' />
-  );
-}
+import MainPage from './pages/Main';
 
 const App: React.FC = () => {
   return (
     <AppContextProvider>
-      <Router>
-        <Window>
-          <OrganizerPanel />
-          <MainPanel>
-            <Switch>
-              <Route exact path="/projects" component={HomePage} />
-              <Route exact path="/projects/new" component={ProjectFormPage} />
-              <Route exact path="/projects/:project" component={ProjectPage} />
-              <Route exact path="/projects/:project/edit" component={ProjectFormPage} />
-              <Route component={Redirect301} />
-            </Switch>
-          </MainPanel>
-        </Window>
-      </Router>
+      <MainPage />
     </AppContextProvider>
   );
 }

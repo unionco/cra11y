@@ -83,3 +83,7 @@ http://ionicframework.com/docs/theming/ */
     --app-space-#{$i}: calc(#{$multiple} * #{$i}px);
   }
 }
+
+ion-modal {
+  --height: 90% !important;
+}

@@ -21,6 +21,10 @@ export const initialState: IState = {
   loading: {
     show: false,
     message: undefined
+  },
+  modal: {
+    show: false,
+    component: undefined
   }
 };
 
@@ -36,6 +40,10 @@ export const reducer = (state: IState, action: IAction) => {
     }
     case ActionType.ShowToast: {
       newState = { ...state, toast: action.payload.toast };
+      break;
+    }
+    case ActionType.ShowModal: {
+      newState = { ...state, modal: action.payload.modal };
       break;
     }
 
@@ -54,22 +62,19 @@ export const reducer = (state: IState, action: IAction) => {
       break;
     }
     case ActionType.DeleteProject: {
-      // if (action.payload.project) {
-      //   const projectToDelete = action.payload.project;
-      //   const projects = state.projects.slice();
-      //   const projectIndex = projects.findIndex((p: Project) => p.id === projectToDelete.id);
+      if (action.payload.project) {
+        const projectToDelete = action.payload.project;
+        const projects = state.projects.slice();
+        const projectIndex = projects.findIndex((p: Project) => p.id === projectToDelete.id);
 
-      //   projects.splice(projectIndex, 1);
-      //   const nextProject = projects.length ? projects[0] : null;
+        projects.splice(projectIndex, 1);
 
-      //   newState = {
-      //     ...state,
-      //     projects,
-      //     project: nextProject,
-      //     page: nextProject ? 0 : null,
-      //     issue: _.get(nextProject, `pages.0.ally.violations.0`)
-      //   };
-      // }
+        newState = {
+          ...state,
+          projects,
+          project: null
+        };
+      }
       break;
     }
 
@@ -84,6 +89,7 @@ export const reducer = (state: IState, action: IAction) => {
           page: pageIndex,
           issue: _.get(state, `project.pages.${pageIndex}.ally.violations.0`)
         };
+        // ls
       }
       break;
     }
@@ -146,7 +152,7 @@ export const reducer = (state: IState, action: IAction) => {
 const lsState: any = get('state');
 
 function AppContextProvider(props: any) {
-  const fullInitialState: IState = Object.assign(initialState, lsState, { view: ['projects'] });
+  const fullInitialState: IState = Object.assign(initialState, lsState);
 
   const [state, dispatch] = useReducer<React.Reducer<IState, IAction>>(reducer, fullInitialState);
   const value: IContext = { state, dispatch };

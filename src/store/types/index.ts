@@ -2,6 +2,7 @@ import { Dispatch } from 'react';
 import { Project, Page } from '../models';
 
 export enum ActionType {
+  ShowModal = 'showModal',
   SetLoading = 'setLoading',
   SetProject = 'setProject',
   SaveProject = 'saveProject',
@@ -32,14 +33,20 @@ export interface ILoading {
   message?: string;
 }
 
+export interface IModal {
+  show: boolean;
+  component: any;
+}
+
 export interface IAction {
   type: ActionType;
   payload: {
     project?: Project, // active project
     page?: Page; // page index
     issue?: any; // issue index
-    toast?: IToast,
-    loading?: ILoading
+    toast?: IToast;
+    loading?: ILoading;
+    modal?: IModal;
   };
 }
 
@@ -50,6 +57,7 @@ export interface IState {
   issue?: number|null;
   toast?: IToast;
   loading?: ILoading;
+  modal?: IModal;
 };
 
 export interface IContext {

@@ -1,19 +1,18 @@
 import React, { useContext, useState } from 'react';
-import { IonIcon, IonCol, IonToolbar, IonTitle, IonButtons, IonButton, IonContent, IonPopover, IonSearchbar, IonList, IonItem, IonLabel, IonBadge, IonSpinner, IonAlert } from '@ionic/react';
+import { IonIcon, IonCol, IonToolbar, IonTitle, IonButtons, IonButton, IonPopover, IonSearchbar, IonList, IonItem, IonLabel, IonBadge, IonSpinner, IonAlert } from '@ionic/react';
 import { addCircleOutline, arrowDropdown, more } from 'ionicons/icons';
 import ProjectPopover from '../ProjectPopover';
 import PageActionPopover from '../PageActionPopover';
 import { AppContext, Project, Page } from '../../store';
 import { ActionType } from '../../store/types';
-import { useRouter } from '../../util/router';
 import { crawlAsync } from '../../util/crawl';
 import { ResultType } from '../../store/models/Project';
 import './styles.scss';
+import ProjectForm from '../ProjectForm';
 
-const OrganizerPanel: React.FunctionComponent<any> = () => {
+const OrganizerPanel: React.FunctionComponent<any> = ({ activePage, changePage }) => {
 
   /** Hooks */
-  const router = useRouter();
   const { state, dispatch } = useContext<any>(AppContext);
   const [showPopover, setShowPopover] = useState<any>({ show: false, event: null });
   const [showActions, setShowActions] = useState<any>({ show: false, event: null, page: null });
@@ -21,13 +20,12 @@ const OrganizerPanel: React.FunctionComponent<any> = () => {
   const [showAlert, setShowAlert] = useState(false);
 
   const newProject = () => {
-    console.log('start new project');
     setShowPopover({ show: false });
+    dispatch({ type: ActionType.ShowModal, payload: { modal: { show: true, component: ProjectForm } } });
+  }
 
-    setTimeout(() => {
-      dispatch({ type: ActionType.SetProject, payload: { project: false } });
-      router.replace('/projects/new');
-    }, 1000);
+  const editProject = () => {
+    setShowPopover({ show: false });
   }
 
   const switchProject = (project: Project) => {
@@ -35,28 +33,14 @@ const OrganizerPanel: React.FunctionComponent<any> = () => {
     dispatch({ type: ActionType.SetLoading, payload: { loading: { show: true } } });
 
     setTimeout(() => {
+      dispatch({ type: ActionType.SetProject, payload: { project } });
       dispatch({ type: ActionType.SetLoading, payload: { loading: { show: false } } });
-      router.push(`/projects/${project.id}`);
-    }, 1000);
-  }
-
-  const editProject = () => {
-    router.push(`/projects/${state.project.id}/edit`);
-    setShowPopover({ show: false });
-  }
-
-  const updateSearchValue = (value: string) => {
-    setSearchValue(value);
-  }
-
-  const setPage = (page: Page) => {
-    dispatch({ type: ActionType.SetPage, payload: { page } });
+    }, 500);
   }
 
   const deleteProject = () => {
     setShowPopover({ show: false });
 
-    // this does nothing right now...
     dispatch({
       type: ActionType.DeleteProject,
       payload: {
@@ -65,6 +49,14 @@ const OrganizerPanel: React.FunctionComponent<any> = () => {
     });
 
     dispatch({ type: ActionType.ShowToast, payload: { toast: { show: true, message: 'Your project has been deleted.' } } });
+  }
+
+  const setPage = (page: Page) => {
+    changePage(page);
+  }
+
+  const updateSearchValue = (value: string) => {
+    setSearchValue(value);
   }
 
   const deletePage = (page: Page) => {
@@ -129,20 +121,27 @@ const OrganizerPanel: React.FunctionComponent<any> = () => {
     }
 
     return (
-      <IonToolbar>
-        <IonTitle>{state.project.name}</IonTitle>
-        <IonButtons slot="end">
-          <IonButton
-            icon-only={true}
-            onClick={(e: any) => {
-              e.persist();
-              setShowPopover({ show: true, event: e })
-            }}
-          >
-            <IonIcon slot="icon-only" icon={arrowDropdown} />
-          </IonButton>
-        </IonButtons>
-      </IonToolbar>
+      <>
+        <IonToolbar>
+          <IonTitle>{state.project.name}</IonTitle>
+          <IonButtons slot="end">
+            <IonButton
+              icon-only={true}
+              onClick={(e: any) => {
+                e.persist();
+                setShowPopover({ show: true, event: e })
+              }}
+            >
+              <IonIcon slot="icon-only" icon={arrowDropdown} />
+            </IonButton>
+          </IonButtons>
+        </IonToolbar>
+        {state.project &&
+          <IonToolbar className="SearchToolbar">
+            <IonSearchbar mode="ios" color="light" animated={true} value={searchValue} onIonChange={(e: CustomEvent) => updateSearchValue(e.detail.value)} />
+          </IonToolbar>
+        }
+      </>
     );
   }
 
@@ -151,46 +150,39 @@ const OrganizerPanel: React.FunctionComponent<any> = () => {
       <IonCol size="3" className="OrganizerPanel">
         <div className="OrganizerPanel-spacer u-drag" />
         {header()}
-        <IonContent>
-          {state.project &&
-            <IonToolbar>
-              <IonSearchbar mode="ios" color="light" animated={true} value={searchValue} onIonChange={(e: CustomEvent) => updateSearchValue(e.detail.value)} />
-            </IonToolbar>
-          }
-          <IonList>
-            {getPages().map((page: Page, index: number) => (
-              <IonItem lines="full" key={index}>
-                <IonLabel text-wrap={true} onClick={() => setPage(page)}>
-                  <h3>{page.url}</h3>
-                  <p>{state.project.timestamp}</p>
+        <IonList>
+          {getPages().map((page: Page, index: number) => (
+            <IonItem lines="full" key={index} className={activePage && activePage.url === page.url ? 'u-active' : ''}>
+              <IonLabel text-wrap={true} onClick={() => setPage(page)}>
+                <h3>{page.url}</h3>
+                <p>{state.project.timestamp}</p>
 
-                  {page.ally &&
-                    <div className="badge-list">
-                      {state.project.resultTypes.map((type: ResultType, index: number) => (
-                        <IonBadge mode="ios" color={type.color} key={index}>
-                          {page.ally && (page.ally as any)[type.value].length}
-                        </IonBadge>
-                      ))}
-                    </div>
-                  }
-                </IonLabel>
-                {page.isCrawling ?
-                  <IonSpinner color="light" slot="end" />
-                  :
-                  <IonIcon
-                    color="light"
-                    slot="end"
-                    icon={more}
-                    onClick={(e: any) => {
-                      e.persist();
-                      setShowActions({ show: true, event: e, page });
-                    }}
-                  />
+                {page.ally &&
+                  <div className="badge-list">
+                    {state.project.resultTypes.map((type: ResultType, index: number) => (
+                      <IonBadge mode="ios" color={type.color} key={index}>
+                        {page.ally && (page.ally as any)[type.value].length}
+                      </IonBadge>
+                    ))}
+                  </div>
                 }
-              </IonItem>
-            ))}
-          </IonList>
-        </IonContent>
+              </IonLabel>
+              {page.isCrawling ?
+                <IonSpinner color="light" slot="end" />
+                :
+                <IonIcon
+                  color="light"
+                  slot="end"
+                  icon={more}
+                  onClick={(e: any) => {
+                    e.persist();
+                    setShowActions({ show: true, event: e, page });
+                  }}
+                />
+              }
+            </IonItem>
+          ))}
+        </IonList>
       </IonCol>
       <IonPopover
         isOpen={showPopover.show}

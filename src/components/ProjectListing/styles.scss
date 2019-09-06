@@ -1,0 +1,44 @@
+.ProjectListing {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 88px);
+  justify-content: center;
+  width: 100%;
+
+  // let the user move the entire window
+  -webkit-user-select: none;
+  -webkit-app-region: drag;
+
+  h1,
+  p {
+    margin: 0;
+  }
+
+  h1 {
+    font-size: 4em;
+    text-transform: uppercase;
+    font-weight: bold;
+  }
+
+  img {
+    max-width: 100%;
+    position: relative;
+  }
+
+  &-intro {
+    margin-bottom: 24px;
+
+    ion-thumbnail {
+      align-self: flex-start;
+    }
+    ion-label {
+      margin: 0;
+    }
+  }
+
+  &-card {
+    max-width: 600px;
+    width: 100%;
+  }
+}
