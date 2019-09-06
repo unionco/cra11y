@@ -38,8 +38,13 @@ const OrganizerPanel: React.FunctionComponent<any> = ({ activePage, changePage }
     }, 500);
   }
 
+  const deleteProjectAlert = () => {
+    setShowPopover({ show: false, event: null });
+    setShowAlert(true);
+  }
+
   const deleteProject = () => {
-    setShowPopover({ show: false });
+    setShowAlert(false);
 
     dispatch({
       type: ActionType.DeleteProject,
@@ -194,7 +199,7 @@ const OrganizerPanel: React.FunctionComponent<any> = ({ activePage, changePage }
           projects={state.projects}
           switchProject={switchProject}
           editProject={editProject}
-          deleteProject={setShowAlert}
+          deleteProject={deleteProjectAlert}
           newProject={newProject}
         />
       </IonPopover>
@@ -212,7 +217,6 @@ const OrganizerPanel: React.FunctionComponent<any> = ({ activePage, changePage }
       {state.project &&
         <IonAlert
           isOpen={showAlert}
-          onDidDismiss={() => setShowAlert(false)}
           header={'Deleting Project'}
           subHeader={state.project.name}
           message={'Are you sure you want to delete this project? This action is not reversible.'}
@@ -221,6 +225,9 @@ const OrganizerPanel: React.FunctionComponent<any> = ({ activePage, changePage }
               text: 'Cancel',
               role: 'cancel',
               cssClass: 'secondary',
+              handler: () => {
+                setShowAlert(false);
+              }
             }, {
               text: 'Confirm',
               handler: () => {

@@ -38,13 +38,18 @@ const ProjectListing: React.FunctionComponent = () => {
         <>
           <IonListHeader mode="ios">
             All Projects
-                </IonListHeader>
+          </IonListHeader>
           {state.projects.map((project: Project, index: number) => (
             <IonItem lines={index === state.projects.length - 1 ? 'none' : 'inset'} key={index} onClick={() => openProject(project)}>
               <IonLabel>{project.name}</IonLabel>
               <IonIcon color="primary" slot="end" icon={swap} />
             </IonItem>
           ))}
+          <IonItem lines="none">
+            <IonButton color="primary" slot="start" onClick={() => createProject()}>
+              Create Project
+          </IonButton>
+          </IonItem>
         </>
       );
     }

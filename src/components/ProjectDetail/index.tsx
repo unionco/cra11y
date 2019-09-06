@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { IonHeader, IonToolbar, IonTitle, IonButton, IonGrid, IonRow } from '@ionic/react';
 import _get from 'lodash/get';
 import { ResultType, Project } from '../../store/models/Project';
@@ -24,9 +24,9 @@ const ProjectDetail: React.FunctionComponent<ProjectDetailProps> = ({ project })
   const [activePage, setActivePage] = useState(storedIndex || 0);
 
   let page: Page = project.pages[activePage] ? project.pages[activePage] : project.pages[0];
-  useEffect(() => {
-    page = project.pages[activePage] ? project.pages[activePage] : project.pages[0];
-  }, [project, activePage])
+  // useEffect(() => {
+  //   page = project.pages[activePage] ? project.pages[activePage] : project.pages[0];
+  // }, [project, activePage])
 
   const scrollTo = (section: string) => {
     const el: HTMLElement | null = document.querySelector(`#section-${section}`);
@@ -62,12 +62,10 @@ const ProjectDetail: React.FunctionComponent<ProjectDetailProps> = ({ project })
     }
 
     return (
-      <>
-        <Analyze
-          page={page}
-          analyze={analyze}
-        />
-      </>
+      <Analyze
+        page={page}
+        analyze={analyze}
+      />
     );
   }
 
