@@ -1,37 +1,21 @@
 import React, { useState, useEffect, useContext } from "react";
-import { IonGrid, IonRow, IonCol, IonItem, IonLabel, IonInput, IonCheckbox, IonList, IonButton, IonIcon, IonAlert } from "@ionic/react";
-import { add, trash, closeCircleOutline } from "ionicons/icons";
+import { IonGrid, IonRow, IonCol, IonItem, IonLabel, IonInput, IonCheckbox, IonList, IonButton, IonIcon } from "@ionic/react";
+import { add, closeCircleOutline } from "ionicons/icons";
 import _ from 'lodash';
 import * as uuid from 'uuid';
-import './styles.scss';
 import { useRouter } from "../../util/router";
 import { AppContext, Page } from "../../store";
 import { ActionType } from "../../store/types";
-import { crawl, pageLinks } from "../../util";
-import { ResultType, Tag } from "../../store/models/Project";
+import { crawlAsync } from "../../util";
+import { ResultType, Tag, Project, defaultTags, defaultResultTypes } from "../../store/models/Project";
+import './styles.scss';
 
 const ProjectFormPage: React.FunctionComponent<any> = () => {
-  /** static */
-  const tagValues: Tag[] = [
-    { label: 'Best Practice', value: 'best-practice', checked: true },
-    { label: 'WCAG A', value: 'wcag2a', checked: true },
-    { label: 'WCAG AA', value: 'wcag2aa', checked: false },
-    { label: 'Section 508', value: 'section508', checked: false },
-  ];
-
-  // ['violations', 'incomplete', 'inapplicable', 'passes']
-  const resultTypes: ResultType[] = [
-    { label: 'Violations', value: 'violations', checked: true, color: 'primary' },
-    { label: 'Incomplete', value: 'incomplete', checked: true, color: 'secondary' },
-    { label: 'Inapplicable', value: 'inapplicable', checked: true, color: 'tertiary' },
-    { label: 'Passes', value: 'passes', checked: true, color: 'success' },
-  ]
-
   const project: any = {
     name: 'Boplex Audit',
     tags: [],
     useJs: true,
-    home: 'http://dev.boplex.com',
+    home: 'https://www.boplex.com',
     pages: [],
     numPages: 1,
     timestamp: (new Date()).toDateString()
@@ -41,11 +25,11 @@ const ProjectFormPage: React.FunctionComponent<any> = () => {
   const router = useRouter();
   const { state, dispatch } = useContext<any>(AppContext);
   const [formValue, setFormValues] = useState<any>(state.project && state.project.id ? state.project : project);
-  const [tags, setTags] = useState<any>(tagValues);
-  const [types, setTypes] = useState<any>(resultTypes);
+  const [tags, setTags] = useState<any>(defaultTags);
+  const [types, setTypes] = useState<any>(defaultResultTypes);
   const [valid, isValid] = useState<any>(false);
-  const [showAlert, setShowAlert] = useState(false);
 
+  // TODO::add validation for url
   useEffect(() => {
     if (formValue.home) {
       isValid(true);
@@ -53,14 +37,6 @@ const ProjectFormPage: React.FunctionComponent<any> = () => {
       isValid(false);
     }
   }, [formValue.home]);
-
-  //** methods */
-  const heading = () => {
-    if (state.project && state.project.id) {
-      return `Edit Project ${state.project.name}`;
-    }
-    return 'Create New Project';
-  }
 
   const updateFormField = (key: string, value: any) => {
     const newValues = _.merge(formValue, { [key]: value });
@@ -81,11 +57,6 @@ const ProjectFormPage: React.FunctionComponent<any> = () => {
     setTypes(types);
   }
 
-  const deleteProject = () => {
-    // dispatch({ type: ActionType.DeleteProject, payload: { project: formValue } });
-    dispatch({ type: ActionType.ShowToast, payload: { toast: { show: true, message: 'Your project has been deleted.' } } });
-  }
-
   const submitForm = async (e: any) => {
     // prevent default
     e.preventDefault();
@@ -93,39 +64,29 @@ const ProjectFormPage: React.FunctionComponent<any> = () => {
     // set loader
     dispatch({ type: ActionType.SetLoading, payload: { loading: { show: true } }});
 
-    const project = {
+    // setup project data
+    const project: Project = {
       ...formValue,
       tags: tags.filter((t: Tag) => t.checked),
       resultTypes: types.filter((t: ResultType) => t.checked),
     };
 
+    // on new project - give it an ID
     if (!project.id) {
       project.id = uuid.v4();
     }
 
-    // response from our crawl util -> electron
-    const response = await crawl(project.home, project);
-
     // push page into pages
-    const pageIndex = project.pages.findIndex((page: Page) => page.url === response.url);
-    if (pageIndex > -1) {
-      project.pages[pageIndex] = response;
-    } else {
-      project.pages.push(response)
+    const pageIndex = project.pages.findIndex((page: Page) => page.url === project.home);
+    if (pageIndex === -1) {
+      project.pages.push({
+        url: project.home,
+        isCrawling: true
+      });
     }
 
-    // set up future pages
-    const links = pageLinks(response.html, project.home);
-    links.forEach((link: string) => {
-      if (!project.pages.find((p: Page) => p.url.toLowerCase() === link.toLowerCase())) {
-        project.pages.push({
-          url: link
-        });
-      }
-    });
-
-    // stop the loader
-    dispatch({ type: ActionType.SetLoading, payload: { loading: { show: false } } });
+    // crawl it
+    crawlAsync(project.home, project);
 
     // save the project
     dispatch({ type: ActionType.SaveProject, payload: { project }});
@@ -135,8 +96,13 @@ const ProjectFormPage: React.FunctionComponent<any> = () => {
       // crawler(project.pages, project.numPages, project.useJs, dispatch);
     }
 
-    // go to project
-    router.push(`/projects/${project.id}`);
+    setTimeout(() => {
+      // stop the loader
+      dispatch({ type: ActionType.SetLoading, payload: { loading: { show: false } } });
+
+      // go to project
+      router.push(`/projects/${project.id}`);
+    }, 500);
   }
 
   const cancelForm = () => {
@@ -156,7 +122,7 @@ const ProjectFormPage: React.FunctionComponent<any> = () => {
         <IonGrid>
           <IonRow>
             <IonCol size="8">
-              <h1 className="ProjectFormPage-title">{heading()}</h1>
+              <h1 className="ProjectFormPage-title">Create New Project</h1>
             </IonCol>
           </IonRow>
           <IonRow>
@@ -257,35 +223,10 @@ const ProjectFormPage: React.FunctionComponent<any> = () => {
                 Create Project
                 <IonIcon slot="end" icon={add} />
               </IonButton>
-              {formValue.id &&
-                <IonButton color="danger" onClick={() => setShowAlert(true)}>
-                  Delete Project
-                  <IonIcon slot="end" icon={trash} />
-                </IonButton>
-              }
             </IonCol>
           </IonRow>
         </IonGrid>
       </form>
-      <IonAlert
-        isOpen={showAlert}
-        onDidDismiss={() => setShowAlert(false)}
-        header={'Deleting Project'}
-        subHeader={formValue.name}
-        message={'Are you sure you want to delete this project? This action is not reversible.'}
-        buttons={[
-          {
-            text: 'Cancel',
-            role: 'cancel',
-            cssClass: 'secondary',
-          }, {
-            text: 'Confirm',
-            handler: () => {
-              deleteProject();
-            }
-          }
-        ]}
-      />
     </div>
   );
 }

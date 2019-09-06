@@ -1,5 +1,5 @@
 import { Dispatch } from 'react';
-import { Project } from '../models';
+import { Project, Page } from '../models';
 
 export enum ActionType {
   SetLoading = 'setLoading',
@@ -13,23 +13,13 @@ export enum ActionType {
   SetMode = 'setMode',
   SetIssue = 'setIssue',
   SetPage = 'setPage',
+  UpdatePage = 'updatePage',
   CrawlPage = 'crawlPage',
   CrawlPageDone = 'crawlPageDone',
   CrawlProject = 'crawlProject',
   CrawlComplete = 'crawlComplete',
   CrawlCancelled = 'crawlCancelled',
   ShowToast = 'showToast'
-}
-
-export enum StateModeType {
-  New = 'new',
-  Edit = 'edit'
-}
-
-export enum StateViewType {
-  Form = 'form',
-  Project = 'project',
-  Crawling = 'crawling'
 }
 
 export interface IToast {
@@ -45,13 +35,11 @@ export interface ILoading {
 export interface IAction {
   type: ActionType;
   payload: {
-    project: Project, // active project
-    page: number; // page index
-    issue: any; // issue index
-    view: StateViewType;
-    mode: StateModeType,
-    toast: IToast,
-    loading: ILoading
+    project?: Project, // active project
+    page?: Page; // page index
+    issue?: any; // issue index
+    toast?: IToast,
+    loading?: ILoading
   };
 }
 
@@ -60,10 +48,8 @@ export interface IState {
   project?: Project|null;
   page?: number|null;
   issue?: number|null;
-  view: StateViewType;
-  mode: StateModeType;
-  toast?: IToast,
-  loading?: ILoading
+  toast?: IToast;
+  loading?: ILoading;
 };
 
 export interface IContext {

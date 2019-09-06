@@ -1,14 +1,14 @@
 import React, { useContext, useState } from 'react';
-import { IonIcon, IonCol, IonToolbar, IonTitle, IonButtons, IonButton, IonContent, IonPopover, IonSearchbar, IonList, IonItem, IonLabel, IonBadge, IonSpinner } from '@ionic/react';
+import { IonIcon, IonCol, IonToolbar, IonTitle, IonButtons, IonButton, IonContent, IonPopover, IonSearchbar, IonList, IonItem, IonLabel, IonBadge, IonSpinner, IonAlert } from '@ionic/react';
 import { addCircleOutline, arrowDropdown, more } from 'ionicons/icons';
+import ProjectPopover from '../ProjectPopover';
+import PageActionPopover from '../PageActionPopover';
 import { AppContext, Project, Page } from '../../store';
 import { ActionType } from '../../store/types';
 import { useRouter } from '../../util/router';
-import { crawl } from '../../util/crawl';
-import ProjectPopover from '../ProjectPopover';
-import PageActionPopover from '../PageActionPopover';
-import './styles.scss';
+import { crawlAsync } from '../../util/crawl';
 import { ResultType } from '../../store/models/Project';
+import './styles.scss';
 
 const OrganizerPanel: React.FunctionComponent<any> = () => {
 
@@ -18,6 +18,7 @@ const OrganizerPanel: React.FunctionComponent<any> = () => {
   const [showPopover, setShowPopover] = useState<any>({ show: false, event: null });
   const [showActions, setShowActions] = useState<any>({ show: false, event: null, page: null });
   const [searchValue, setSearchValue] = useState<any>('');
+  const [showAlert, setShowAlert] = useState(false);
 
   const newProject = () => {
     console.log('start new project');
@@ -48,8 +49,22 @@ const OrganizerPanel: React.FunctionComponent<any> = () => {
     setSearchValue(value);
   }
 
-  const setPage = (index: number) => {
-    dispatch({ type: ActionType.SetPage, payload: { page: index } });
+  const setPage = (page: Page) => {
+    dispatch({ type: ActionType.SetPage, payload: { page } });
+  }
+
+  const deleteProject = () => {
+    setShowPopover({ show: false });
+
+    // this does nothing right now...
+    dispatch({
+      type: ActionType.DeleteProject,
+      payload: {
+        project: state.project
+      }
+    });
+
+    dispatch({ type: ActionType.ShowToast, payload: { toast: { show: true, message: 'Your project has been deleted.' } } });
   }
 
   const deletePage = (page: Page) => {
@@ -59,7 +74,12 @@ const OrganizerPanel: React.FunctionComponent<any> = () => {
     const pageIndex = project.pages.findIndex((p: Page) => p.url === page.url);
     project.pages.splice(pageIndex, 1);
     dispatch({ type: ActionType.UpdateProject, payload: { project } });
-    dispatch({ type: ActionType.CrawlPageDone, payload: { page: 0 } });
+    dispatch({
+      type: ActionType.SetPage,
+      payload: {
+        page: project.pages[pageIndex > 0 ? pageIndex - 1 : 0]
+      }
+    });
   }
 
   const getPages = () => {
@@ -75,16 +95,8 @@ const OrganizerPanel: React.FunctionComponent<any> = () => {
   const analyze = async (page: Page) => {
     // in case it was open
     setShowActions({ show: false, event: null, page: null });
-
-    const { project } = state;
-    const pageIndex = project.pages.findIndex((p: Page) => p.url === page.url);
-    dispatch({ type: ActionType.CrawlPage, payload: { page: pageIndex } });
-
-    const response = await crawl(page.url, state.project);
-    project.pages[pageIndex] = response;
-
-    dispatch({ type: ActionType.UpdateProject, payload: { project } });
-    dispatch({ type: ActionType.CrawlPageDone, payload: { page: pageIndex } });
+    dispatch({ type: ActionType.CrawlPage, payload: { page } });
+    crawlAsync(page.url, state.project);
   }
 
   const header = () => {
@@ -147,8 +159,8 @@ const OrganizerPanel: React.FunctionComponent<any> = () => {
           }
           <IonList>
             {getPages().map((page: Page, index: number) => (
-              <IonItem lines="full" key={index} onClick={() => setPage(index)}>
-                <IonLabel text-wrap={true}>
+              <IonItem lines="full" key={index}>
+                <IonLabel text-wrap={true} onClick={() => setPage(page)}>
                   <h3>{page.url}</h3>
                   <p>{state.project.timestamp}</p>
 
@@ -190,6 +202,7 @@ const OrganizerPanel: React.FunctionComponent<any> = () => {
           projects={state.projects}
           switchProject={switchProject}
           editProject={editProject}
+          deleteProject={setShowAlert}
           newProject={newProject}
         />
       </IonPopover>
@@ -204,6 +217,27 @@ const OrganizerPanel: React.FunctionComponent<any> = () => {
           onDelete={deletePage}
         />
       </IonPopover>
+      {state.project &&
+        <IonAlert
+          isOpen={showAlert}
+          onDidDismiss={() => setShowAlert(false)}
+          header={'Deleting Project'}
+          subHeader={state.project.name}
+          message={'Are you sure you want to delete this project? This action is not reversible.'}
+          buttons={[
+            {
+              text: 'Cancel',
+              role: 'cancel',
+              cssClass: 'secondary',
+            }, {
+              text: 'Confirm',
+              handler: () => {
+                deleteProject();
+              }
+            }
+          ]}
+        />
+      }
     </>
   );
 }

@@ -102,7 +102,7 @@ ipcMain.on('crawl-async', (event, args) => {
   webpage(args)
     .then((response) => {
       event.reply('crawl-reply', {
-        url: args.url,
+        url: response.url,
         html: response.html,
         results: response.results
       });

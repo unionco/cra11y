@@ -56,6 +56,7 @@ const webpage = async ({
     await browser.close();
 
     return {
+      url: url,
       html: html,
       results: results
     };

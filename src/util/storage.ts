@@ -3,12 +3,12 @@ function prefix(key: string) {
 }
 
 export function get(key: string): string {
-  return JSON.parse(window.localStorage.getItem(prefix(key)) || '{}');
+  return (window as any).estore.get(prefix(key));
 }
 
 export function store(key: string, data: any) {
   try {
-    window.localStorage.setItem(prefix(key), JSON.stringify(data));
+    (window as any).estore.set(prefix(key), data);
   } catch (error) {
     console.log('store error', error);
   }

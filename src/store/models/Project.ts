@@ -14,12 +14,14 @@ export interface ResultType {
   color?: string;
 }
 
-const defaultTags: Tag[] = [
+export const defaultTags: Tag[] = [
   { label: 'Best Practice', value: 'best-practice', checked: true },
   { label: 'WCAG A', value: 'wcag2a', checked: true },
+  { label: 'WCAG AA', value: 'wcag2aa', checked: true },
+  { label: 'Section 508', value: 'section508', checked: false },
 ];
 
-const defaultResultTypes = [
+export const defaultResultTypes = [
   { label: 'Violations', value: 'violations', checked: true, color: 'primary' },
   { label: 'Incomplete', value: 'incomplete', checked: true, color: 'secondary' },
   { label: 'Inapplicable', value: 'inapplicable', checked: true, color: 'tertiary' },
@@ -34,7 +36,7 @@ export class Project {
   useJs?: boolean;
   home: string;
   numPages: number;
-  pages?: Page[];
+  pages: Page[];
   timestamp: Date;
 
   constructor(params: any) {

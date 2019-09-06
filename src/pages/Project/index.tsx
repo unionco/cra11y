@@ -1,31 +1,18 @@
 import React, { useContext, useEffect } from "react";
 import { IonHeader, IonCol, IonRow, IonGrid, IonToolbar, IonTitle, IonButton } from '@ionic/react';
-import { Redirect } from "../../util/router";
-import './styles.scss';
-import { AppContext, Project, Page } from "../../store";
 import { ActionType } from "../../store/types";
 import PagePane from "../../components/PagePane";
 import IssuePane from "../../components/IssuePane";
 import Analyze from "../../components/Analyze";
-import { crawl } from "../../util";
+import { crawlAsync } from "../../util";
 import { ResultType } from "../../store/models/Project";
-
-interface List {
-  label: string;
-  value: string;
-  color: string;
-}
+import { Redirect } from "../../util/router";
+import { AppContext, Project } from "../../store";
+import './styles.scss';
 
 const ProjectPage: React.FunctionComponent<any> = ({ match: { params }, ...props }) => {
   const { state, dispatch } = useContext<any>(AppContext);
   const project = state.projects.find((project: Project) => project.id === params.project);
-
-  const listMap: List[] = [
-    { label: 'Violations', value: 'violations', color: 'primary' },
-    { label: 'Incomplete', value: 'incomplete', color: 'secondary' },
-    { label: 'Inapplicable', value: 'inapplicable', color: 'tertiary' },
-    { label: 'Passes', value: 'passes', color: 'success' },
-  ];
 
   /** Set it once on load */
   useEffect(() => {
@@ -33,8 +20,8 @@ const ProjectPage: React.FunctionComponent<any> = ({ match: { params }, ...props
       dispatch({ type: ActionType.SetProject, payload: { project } });
     }
 
-    if (!state.page) {
-      dispatch({ type: ActionType.SetPage, payload: { page: 0 } });
+    if (!state.page && project.pages.length) {
+      dispatch({ type: ActionType.SetPage, payload: { page: project.pages[0] } });
     }
   }, [dispatch, state.page, project]);
 
@@ -45,18 +32,11 @@ const ProjectPage: React.FunctionComponent<any> = ({ match: { params }, ...props
     )
   }
 
-  const page = project.pages[state.page || 0];
+  const page: any = project.pages.length ? project.pages[state.page || 0] : false;
 
   const analyze = async () => {
-    const { project } = state;
-    const pageIndex = project.pages.findIndex((p: Page) => p.url === page.url);
-    dispatch({ type: ActionType.CrawlPage, payload: { page: pageIndex } });
-
-    const response = await crawl(page.url, state.project);
-    project.pages[pageIndex] = response;
-
-    dispatch({ type: ActionType.UpdateProject, payload: { project } });
-    dispatch({ type: ActionType.CrawlPageDone, payload: { page: pageIndex } });
+    dispatch({ type: ActionType.CrawlPage, payload: { page } });
+    crawlAsync(page.url, state.project);
   }
 
   const getContent = () => {
@@ -94,28 +74,32 @@ const ProjectPage: React.FunctionComponent<any> = ({ match: { params }, ...props
 
   return (
     <div className="ProjectPage">
-      <IonHeader>
-        <IonToolbar>
-          <IonTitle>
-            <h2>{page.url}</h2>
-            <p>{project.timestamp}</p>
-          </IonTitle>
-          {state.project && page.ally &&
-            <div className="ProjectPage-scores" slot="end">
-              {state.project.resultTypes.map((type: ResultType, index: number) => (
-                <IonButton shape="round" key={index} color={type.color} className="ProjectPage-score" onClick={() => scrollTo(type.value)}>
-                  {page.ally[type.value].length}
-                </IonButton>
-              ))}
-            </div>
-          }
-        </IonToolbar>
-      </IonHeader>
-      <IonGrid>
-        <IonRow>
-          {getContent()}
-        </IonRow>
-      </IonGrid>
+      {page &&
+        <>
+          <IonHeader>
+            <IonToolbar>
+              <IonTitle>
+                <h2>{page.url}</h2>
+                <p>{project.timestamp}</p>
+              </IonTitle>
+              {state.project && page.ally &&
+                <div className="ProjectPage-scores" slot="end">
+                  {state.project.resultTypes.map((type: ResultType, index: number) => (
+                    <IonButton shape="round" key={index} color={type.color} className="ProjectPage-score" onClick={() => scrollTo(type.value)}>
+                      {page.ally[type.value].length}
+                    </IonButton>
+                  ))}
+                </div>
+              }
+            </IonToolbar>
+          </IonHeader>
+          <IonGrid>
+            <IonRow>
+              {getContent()}
+            </IonRow>
+          </IonGrid>
+        </>
+      }
     </div>
   );
 }

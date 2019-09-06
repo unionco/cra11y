@@ -1,7 +1,7 @@
 import React from 'react';
 import { IonList, IonItem, IonLabel, IonListHeader, IonIcon } from '@ionic/react';
 import { Project } from '../../store';
-import { create, settings, swap } from 'ionicons/icons';
+import { create, trash, swap } from 'ionicons/icons';
 import './styles.scss';
 
 interface ProjectPopoverProps {
@@ -9,10 +9,11 @@ interface ProjectPopoverProps {
   active: Project|null,
   switchProject: any,
   editProject: any,
+  deleteProject: any,
   newProject: any,
 }
 
-const ProjectPopover: React.FunctionComponent<ProjectPopoverProps> = ({ active, projects, switchProject, editProject, newProject }) => {
+const ProjectPopover: React.FunctionComponent<ProjectPopoverProps> = ({ active, projects, switchProject, deleteProject, newProject }) => {
   return (
     <div className="project-popover">
       <IonList>
@@ -20,10 +21,10 @@ const ProjectPopover: React.FunctionComponent<ProjectPopoverProps> = ({ active, 
           <IonLabel>Current Project</IonLabel>
         </IonListHeader>
         { active &&
-          <IonItem lines="none" onClick={() => editProject()}>
-            <IonIcon slot="start" icon={settings} />
+          <IonItem lines="none" onClick={() => deleteProject(true)}>
+            <IonIcon slot="start" color="danger" icon={trash} />
             <IonLabel>
-              <h3>Edit Project</h3>
+              <h3>Delete Project</h3>
             </IonLabel>
           </IonItem>
         }
@@ -33,14 +34,14 @@ const ProjectPopover: React.FunctionComponent<ProjectPopoverProps> = ({ active, 
           <IonLabel>All Projects</IonLabel>
         </IonListHeader>
         <IonItem lines="none" onClick={() => newProject()}>
-          <IonIcon slot="start" icon={create} />
+          <IonIcon slot="start" color="secondary" icon={create} />
           <IonLabel>
             <h3>Create New Project</h3>
           </IonLabel>
         </IonItem>
         {projects.map((project: Project, index: number) => (
           <IonItem detail={false} key={index} lines="none" onClick={() => switchProject(project)}>
-            <IonIcon slot="start" icon={swap} />
+            <IonIcon slot="start" color="primary" icon={swap} />
             <IonLabel text-wrap={true}>
               <h3>{project.name}</h3>
             </IonLabel>
@@ -56,6 +57,7 @@ ProjectPopover.defaultProps = {
   active: null,
   switchProject: () => {},
   editProject: () => {},
+  deleteProject: () => {},
   newProject: () => {},
 }
 
