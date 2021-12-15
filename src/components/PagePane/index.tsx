@@ -28,9 +28,25 @@ const PagePane: React.FunctionComponent<PagePaneProps> = ({ project, page }) => 
 
   const generateList = (page: Page, list: ResultType, index: number) => {
     const issues: axe.Result[] = _.get(page.ally, list.value);
+    let severitySortedIssues: any[]|null = null;
+    if (list.label === 'Violations' || list.label === 'Incomplete') {
+      const criticalIssues = issues.filter((issue: any) => issue.impact === 'critical');
+      severitySortedIssues = issues.sort((a: any, b: any) => a.impact > b.impact ? -1 : 1);
+      // Once more thing to get criticals in the front
+      severitySortedIssues = [
+        ...criticalIssues,
+        ...severitySortedIssues.filter(issue => issue.impact !== 'critical')
+      ];
+    }
+    const currentListIssues = severitySortedIssues || issues;
 
     const getClass = (issue: axe.Result) => {
-      return activeIssue.id === issue.id ? 'u-active' : '';
+      let impactClass = '';
+      if (issue.impact) {
+        impactClass = `impact--${issue.impact}`
+      }
+
+      return activeIssue.id === issue.id ? `u-active ${impactClass}` : `${impactClass}`;
     }
 
     return (
@@ -40,11 +56,16 @@ const PagePane: React.FunctionComponent<PagePaneProps> = ({ project, page }) => 
             {list.label}
           </IonLabel>
         </IonListHeader>
-        {(issues||[]).map((issue: any, i: number) => (
-          <IonItem lines="full" key={issue.id + i} onClick={() => setIssue(issue)} className={getClass(issue)}>
+        {(currentListIssues||[]).map((issue: any, i: number) => (
+          <IonItem
+            lines="full"
+            key={issue.id + i}
+            onClick={() => setIssue(issue)}
+            className={getClass(issue)}
+          >
             <IonLabel text-wrap={true}>
               <h3>{issue.help}</h3>
-              {issue.impact && <p>Impact: {issue.impact}</p>}
+              {issue.impact && <p className='impact'><span className={`issue issue--${issue.impact.toLowerCase()}`}>{issue.impact}</span></p>}
             </IonLabel>
             <IonBadge mode="ios" slot="end" color={list.color}>
               <IonLabel>

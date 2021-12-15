@@ -25,6 +25,46 @@
     }
   }
 
+  ion-label > p.impact {
+    text-transform: uppercase;
+
+    & span {
+      font-weight: bold;
+    }
+
+    & .issue {
+      &--critical {
+        color: red;
+      }
+      &--serious {
+        color: rgb(205, 107, 9);
+      }
+      &--moderate {
+        color: rgb(24, 115, 146);
+      }
+      &--minor {
+        color: #777;
+      }
+    }
+  }
+
+  ion-item {
+    &.impact {
+      &--critical {
+        border-right: 5px solid red;
+      }
+      &--serious {
+        border-right: 5px solid rgb(205, 107, 9);
+      }
+      &--moderate {
+        border-right: 5px solid rgb(24, 115, 146);
+      }
+      &--minor {
+        border-right: 5px solid #777;
+      }
+    }
+  }
+
   ion-grid {
     --ion-grid-padding: 0;
 
